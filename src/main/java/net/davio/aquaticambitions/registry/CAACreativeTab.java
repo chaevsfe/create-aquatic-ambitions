@@ -16,7 +16,7 @@ public class CAACreativeTab {
 
     public static final CreativeModeTab MAIN_TAB = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MAIN_TAB_KEY,
         FabricCreativeModeTab.builder()
-            .title(Component.translatableWithFallback("itemGroup.create_aquatic_ambitions.base", "Create Aquatic Ambitions"))
+            .title(Component.translatableWithFallback("itemGroup.create_aquatic_ambitions", "Create: Aquatic Ambitions"))
             .icon(CAAItems.PRISMARINE_ALLOY::asStack)
             .displayItems(((itemDisplayParameters, output) -> {
 
