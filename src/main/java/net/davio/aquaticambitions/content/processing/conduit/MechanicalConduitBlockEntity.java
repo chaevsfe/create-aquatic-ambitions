@@ -23,6 +23,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -88,7 +89,13 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
         behaviours.add(tank);
         behaviours.add(new CachedFluidInventoryBehaviour<>(this, be -> be.tank.getCapability()));
 
-        behaviours.add(entityTypeSelector = new ServerScrollOptionBehaviour<>(EntitySelectionMode.class, this));
+        behaviours.add(entityTypeSelector = new ServerScrollOptionBehaviour<>(EntitySelectionMode.class, this) {
+            @Override
+            public void read(ValueInput view, boolean clientPacket) {
+                super.read(view, clientPacket);
+                value = Mth.clamp(value, 0, options.length - 1);
+            }
+        });
 
     }
 
