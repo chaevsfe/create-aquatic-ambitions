@@ -1,7 +1,7 @@
 package net.davio.aquaticambitions.ponder.util.fakeConduitEntity;
 
-import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
@@ -13,15 +13,12 @@ import java.util.List;
 
 public class FakeActiveConduitBlockEntity extends SmartBlockEntity {
 
-    //The ENTIRE point of this block is being able to render a conduit in ponder scenes.
-    //It will not be available anywhere but with commands
-
     public FakeActiveConduitBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
     @Override
-    public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+    public void addBehaviours(List<BlockEntityBehaviour<?>> behaviours) {
     }
 
     @Override
@@ -30,10 +27,6 @@ public class FakeActiveConduitBlockEntity extends SmartBlockEntity {
         if (!isVirtual()) {
             spawnParticles();
         }
-    }
-
-    public void lazyTick() {
-        super.lazyTick();
     }
 
     protected void spawnParticles() {

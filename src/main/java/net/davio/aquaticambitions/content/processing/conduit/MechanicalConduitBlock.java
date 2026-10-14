@@ -1,11 +1,12 @@
 package net.davio.aquaticambitions.content.processing.conduit;
 
 import com.mojang.serialization.Codec;
-import com.simibubi.create.AllShapes;
-import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.foundation.block.IBE;
-import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
-import net.createmod.catnip.lang.Lang;
+import com.zurrtum.create.AllShapes;
+import com.zurrtum.create.content.equipment.wrench.IWrenchable;
+import com.zurrtum.create.foundation.block.IBE;
+import com.zurrtum.create.foundation.block.ProperWaterloggedBlock;
+import com.zurrtum.create.infrastructure.fluids.FluidInventory;
+import com.zurrtum.create.infrastructure.fluids.FluidInventoryProvider;
 import net.davio.aquaticambitions.registry.CAABlockEntityTypes;
 import net.davio.aquaticambitions.registry.CAAShapes;
 import net.minecraft.core.BlockPos;
@@ -18,6 +19,8 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,11 +29,11 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+
+import java.util.Locale;
 
 
-public class MechanicalConduitBlock extends Block implements IBE<MechanicalConduitBlockEntity>, IWrenchable, ProperWaterloggedBlock {
+public class MechanicalConduitBlock extends Block implements IBE<MechanicalConduitBlockEntity>, IWrenchable, ProperWaterloggedBlock, FluidInventoryProvider<MechanicalConduitBlockEntity> {
 
     public static final EnumProperty<ConduitPowerLevel> CONDUIT_POWER_LEVEL = EnumProperty.create("conduit", ConduitPowerLevel.class);
 
@@ -48,36 +51,35 @@ public class MechanicalConduitBlock extends Block implements IBE<MechanicalCondu
     }
 
     @Override
-    public FluidState getFluidState(BlockState pState) {
+    protected FluidState getFluidState(BlockState pState) {
         return fluidState(pState);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState defaultState = defaultBlockState().setValue(CONDUIT_POWER_LEVEL, ConduitPowerLevel.IDLE);;
+        BlockState defaultState = defaultBlockState().setValue(CONDUIT_POWER_LEVEL, ConduitPowerLevel.IDLE);
         return withWater(defaultState, context);
     }
 
     @Override
-    public VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(BlockState blockState, BlockGetter level, BlockPos pos, CollisionContext context) {
         return CAAShapes.MECH_CONDUIT_SHAPE;
-    };
+    }
 
     @Override
-    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState,
-        LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
-        updateWater(pLevel, pState, pCurrentPos);
+    protected BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess pTickAccess, BlockPos pCurrentPos,
+        Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState, RandomSource pRandom) {
+        updateWater(pLevel, pTickAccess, pState, pCurrentPos);
         return pState;
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState blockState, BlockGetter level, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getCollisionShape(BlockState blockState, BlockGetter level, BlockPos pos, CollisionContext context) {
         if (context == CollisionContext.empty()) return AllShapes.HEATER_BLOCK_SPECIAL_COLLISION_SHAPE;
         return getShape(blockState, level, pos, context);
-    };
+    }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
         if (random.nextInt(10) != 0)
             return;
@@ -92,7 +94,7 @@ public class MechanicalConduitBlock extends Block implements IBE<MechanicalCondu
 
     public static ConduitPowerLevel getConduitLevelOf(BlockState blockState) {
         return blockState.getValue(CONDUIT_POWER_LEVEL);
-    };
+    }
 
     @Override
     public Class<MechanicalConduitBlockEntity> getBlockEntityClass() {
@@ -104,6 +106,12 @@ public class MechanicalConduitBlock extends Block implements IBE<MechanicalCondu
         return CAABlockEntityTypes.MECHANICAL_CONDUIT.get();
     }
 
+    @Override
+    public FluidInventory getFluidInventory(LevelAccessor level, BlockPos pos, BlockState state, MechanicalConduitBlockEntity be, Direction side) {
+        if (side == null || side == Direction.DOWN)
+            return be.tank.getCapability();
+        return null;
+    }
 
     public static int getLight(BlockState state) {
         ConduitPowerLevel level = state.getValue(CONDUIT_POWER_LEVEL);
@@ -125,7 +133,7 @@ public class MechanicalConduitBlock extends Block implements IBE<MechanicalCondu
 
         @Override
         public String getSerializedName() {
-            return Lang.asId(name());
+            return name().toLowerCase(Locale.ROOT);
         }
-    };
+    }
 }

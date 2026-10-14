@@ -1,12 +1,14 @@
 package net.davio.aquaticambitions.ponder.util.fakeConduitEntity;
 
-import com.simibubi.create.foundation.block.IBE;
-import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
+import com.zurrtum.create.foundation.block.IBE;
+import com.zurrtum.create.foundation.block.ProperWaterloggedBlock;
 import net.davio.aquaticambitions.registry.CAABlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,9 +16,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 
 public class FakeActiveConduitBlock extends Block implements IBE<FakeActiveConduitBlockEntity>, ProperWaterloggedBlock {
-
-    //The ENTIRE point of this block is being able to render a conduit in ponder scenes.
-    //It will not be available anywhere but with commands
 
     public FakeActiveConduitBlock(Properties props) {
         super(props);
@@ -34,7 +33,7 @@ public class FakeActiveConduitBlock extends Block implements IBE<FakeActiveCondu
         return FakeActiveConduitBlockEntity.class;
     }
 
-
+    @Override
     public BlockEntityType<? extends FakeActiveConduitBlockEntity> getBlockEntityType() {
         return CAABlockEntityTypes.FAKE_CONDUIT.get();
     }
@@ -46,14 +45,14 @@ public class FakeActiveConduitBlock extends Block implements IBE<FakeActiveCondu
     }
 
     @Override
-    public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState,
-                                  LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
-        updateWater(pLevel, pState, pCurrentPos);
+    protected BlockState updateShape(BlockState pState, LevelReader pLevel, ScheduledTickAccess pTickAccess, BlockPos pCurrentPos,
+                                     Direction pDirection, BlockPos pNeighborPos, BlockState pNeighborState, RandomSource pRandom) {
+        updateWater(pLevel, pTickAccess, pState, pCurrentPos);
         return pState;
     }
 
     @Override
-    public FluidState getFluidState(BlockState pState) {
+    protected FluidState getFluidState(BlockState pState) {
         return fluidState(pState);
     }
 }

@@ -7,12 +7,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.level.material.Fluid;
 
-/**
- * Per-conduit mutable state for a single effect. The immutable definition (lang key, effect, color, fluid tag,
- * behavior) now comes from the {@code conduit_effect} datapack registry
- * ({@link MechanicalConduitEffectDefinition}); this class just tracks the accumulated ticks and amplifier for one
- * block entity and delegates the read-only fields to its definition.
- */
 public class MechanicalConduitEffect {
 
     private final MechanicalConduitEffectDefinition definition;
@@ -29,7 +23,7 @@ public class MechanicalConduitEffect {
         return Mth.floor(ticks);
     }
 
-    public void setTicks(int newTicks) { //Used to update client side
+    public void setTicks(int newTicks) {
         this.ticks = newTicks;
     }
 
@@ -66,7 +60,6 @@ public class MechanicalConduitEffect {
         return definition.color();
     }
 
-    /** The mob effect to apply, or {@code null} for non-effect behaviors (clear/burn). */
     public Holder<MobEffect> getEffect(){
         return definition.mobEffect().orElse(null);
     }
