@@ -1,0 +1,12 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    "minecraft:prismarine",
+    "minecraft:copper_nugget"
+  ],
+  "results": [
+    {
+      "id": "create_aquatic_ambitions:prismarine_alloy"
+    }
+  ]
+}

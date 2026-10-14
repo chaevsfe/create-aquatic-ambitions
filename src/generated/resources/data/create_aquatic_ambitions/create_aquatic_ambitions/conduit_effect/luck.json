@@ -1,6 +1,0 @@
-{
-  "color": "#339900",
-  "fluid_tag": "create_aquatic_ambitions:conduit_effects/gives_luck",
-  "lang_key": "effect.minecraft.luck",
-  "mob_effect": "minecraft:luck"
-}

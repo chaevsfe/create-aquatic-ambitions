@@ -1,0 +1,9 @@
+{
+  "type": "create_aquatic_ambitions:channeling",
+  "ingredient": "minecraft:glowstone_dust",
+  "results": [
+    {
+      "id": "minecraft:prismarine_crystals"
+    }
+  ]
+}

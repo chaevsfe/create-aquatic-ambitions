@@ -1,0 +1,4 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "create_aquatic_ambitions:blocks/fake_active_conduit"
+}

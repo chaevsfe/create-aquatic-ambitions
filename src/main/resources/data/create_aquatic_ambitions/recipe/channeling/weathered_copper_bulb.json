@@ -1,0 +1,9 @@
+{
+  "type": "create_aquatic_ambitions:channeling",
+  "ingredient": "minecraft:exposed_copper_bulb",
+  "results": [
+    {
+      "id": "minecraft:weathered_copper_bulb"
+    }
+  ]
+}
