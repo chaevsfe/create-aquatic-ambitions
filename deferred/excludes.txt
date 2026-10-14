@@ -1,7 +1,4 @@
-net/davio/aquaticambitions/content/processing/conduit/MechanicalConduitModeSlot.java
 net/davio/aquaticambitions/ponder/CAAPonderPlugin.java
 net/davio/aquaticambitions/ponder/CAAPonderScenes.java
 net/davio/aquaticambitions/ponder/scenes/ConduitScenes.java
 net/davio/aquaticambitions/ponder/scenes/MechanicalConduitScenes.java
-net/davio/aquaticambitions/registry/CAAIcons.java
-net/davio/aquaticambitions/util/CAALang.java

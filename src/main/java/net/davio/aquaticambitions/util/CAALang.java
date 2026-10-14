@@ -1,20 +1,23 @@
 package net.davio.aquaticambitions.util;
 
-import net.createmod.catnip.lang.Lang;
-import net.createmod.catnip.lang.LangBuilder;
-import net.createmod.catnip.lang.LangNumberFormat;
+import com.zurrtum.create.client.catnip.lang.Lang;
+import com.zurrtum.create.client.catnip.lang.LangBuilder;
+import com.zurrtum.create.client.catnip.lang.LangNumberFormat;
+import com.zurrtum.create.infrastructure.fluids.FluidStack;
 import net.davio.aquaticambitions.CreateAquaticAmbitions;
-import net.minecraft.Util;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class CAALang extends Lang {
 
     public static MutableComponent translateDirect(String key, Object... args) {
@@ -44,7 +47,7 @@ public class CAALang extends Lang {
     }
 
     public static LangBuilder fluidName(FluidStack stack) {
-        return builder().add(stack.getHoverName()
+        return builder().add(stack.getName()
                 .copy());
     }
 
@@ -60,15 +63,15 @@ public class CAALang extends Lang {
         return builder().text(text);
     }
 
-    public static LangBuilder description(String category, ResourceLocation location, Object... args) {
+    public static LangBuilder description(String category, Identifier location, Object... args) {
         return builder().add(Component.translatable(Util.makeDescriptionId(category, location), args));
     }
 
-    public static LangBuilder description(String category, ResourceLocation location, String suffix, Object... args) {
+    public static LangBuilder description(String category, Identifier location, String suffix, Object... args) {
         return builder().add(Component.translatable(Util.makeDescriptionId(category, location) + "." + suffix, args));
     }
 
-    @Deprecated // Use while implementing and replace all references with Lang.translate
+    @Deprecated
     public static LangBuilder temporaryText(String text) {
         return builder().text(text);
     }

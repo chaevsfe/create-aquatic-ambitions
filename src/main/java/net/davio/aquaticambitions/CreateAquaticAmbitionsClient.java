@@ -2,7 +2,9 @@ package net.davio.aquaticambitions;
 
 import com.zurrtum.create.client.AllBlockEntityBehaviours;
 import com.zurrtum.create.client.AllBlockEntityRenders;
+import net.davio.aquaticambitions.content.processing.conduit.EntitySelectionModeScroll;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitAnimation;
+import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitGoggles;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitRenderer;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitVisual;
 import net.davio.aquaticambitions.ponder.util.fakeConduitEntity.FakeConduitRenderer;
@@ -30,6 +32,6 @@ public class CreateAquaticAmbitionsClient implements ClientModInitializer {
 
     private static void registerBehaviours() {
         AllBlockEntityBehaviours.add(CAABlockEntityTypes.MECHANICAL_CONDUIT.get(),
-                MechanicalConduitAnimation::new);
+                EntitySelectionModeScroll::new, MechanicalConduitGoggles::new, MechanicalConduitAnimation::new);
     }
 }
