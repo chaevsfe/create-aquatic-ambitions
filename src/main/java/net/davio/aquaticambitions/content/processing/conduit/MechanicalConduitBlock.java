@@ -5,8 +5,6 @@ import com.zurrtum.create.AllShapes;
 import com.zurrtum.create.content.equipment.wrench.IWrenchable;
 import com.zurrtum.create.foundation.block.IBE;
 import com.zurrtum.create.foundation.block.ProperWaterloggedBlock;
-import com.zurrtum.create.infrastructure.fluids.FluidInventory;
-import com.zurrtum.create.infrastructure.fluids.FluidInventoryProvider;
 import net.davio.aquaticambitions.registry.CAABlockEntityTypes;
 import net.davio.aquaticambitions.registry.CAAShapes;
 import net.minecraft.core.BlockPos;
@@ -18,7 +16,6 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
@@ -33,7 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.Locale;
 
 
-public class MechanicalConduitBlock extends Block implements IBE<MechanicalConduitBlockEntity>, IWrenchable, ProperWaterloggedBlock, FluidInventoryProvider<MechanicalConduitBlockEntity> {
+public class MechanicalConduitBlock extends Block implements IBE<MechanicalConduitBlockEntity>, IWrenchable, ProperWaterloggedBlock {
 
     public static final EnumProperty<ConduitPowerLevel> CONDUIT_POWER_LEVEL = EnumProperty.create("conduit", ConduitPowerLevel.class);
 
@@ -104,13 +101,6 @@ public class MechanicalConduitBlock extends Block implements IBE<MechanicalCondu
     @Override
     public BlockEntityType<? extends MechanicalConduitBlockEntity> getBlockEntityType() {
         return CAABlockEntityTypes.MECHANICAL_CONDUIT.get();
-    }
-
-    @Override
-    public FluidInventory getFluidInventory(LevelAccessor level, BlockPos pos, BlockState state, MechanicalConduitBlockEntity be, Direction side) {
-        if (side == null || side == Direction.DOWN)
-            return be.tank.getCapability();
-        return null;
     }
 
     public static int getLight(BlockState state) {

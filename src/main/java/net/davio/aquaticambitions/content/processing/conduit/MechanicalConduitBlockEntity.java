@@ -5,13 +5,16 @@ import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
 import com.zurrtum.create.catnip.animation.LerpedFloat;
 import com.zurrtum.create.catnip.math.AngleHelper;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
+import com.zurrtum.create.foundation.blockEntity.behaviour.CachedFluidInventoryBehaviour;
 import com.zurrtum.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ServerScrollOptionBehaviour;
 import com.zurrtum.create.infrastructure.fluids.FluidStack;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitBlock.ConduitPowerLevel;
 import net.davio.aquaticambitions.infrastructure.config.CAAConfig;
+import net.davio.aquaticambitions.registry.CAABlockEntityTypes;
 import net.davio.aquaticambitions.registry.CAARegistries;
 import net.davio.aquaticambitions.registry.CAATags;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -83,9 +86,15 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
         tank = new SmartFluidTankBehaviour(SmartFluidTankBehaviour.INPUT, this, 1, tankCapacity(), true)
                 .forbidExtraction();
         behaviours.add(tank);
+        behaviours.add(new CachedFluidInventoryBehaviour<>(this, be -> be.tank.getCapability()));
 
         behaviours.add(entityTypeSelector = new ServerScrollOptionBehaviour<>(EntitySelectionMode.class, this));
 
+    }
+
+    public static void registerFluidStorage() {
+        FluidStorage.SIDED.registerForBlockEntity((be, side) -> side == null || side == Direction.DOWN ? CachedFluidInventoryBehaviour.get(be, side) : null,
+                CAABlockEntityTypes.MECHANICAL_CONDUIT.get());
     }
 
     public Map<Identifier, MechanicalConduitEffect> getConduitEffects() {
