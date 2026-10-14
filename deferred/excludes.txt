@@ -1,4 +1,0 @@
-net/davio/aquaticambitions/ponder/CAAPonderPlugin.java
-net/davio/aquaticambitions/ponder/CAAPonderScenes.java
-net/davio/aquaticambitions/ponder/scenes/ConduitScenes.java
-net/davio/aquaticambitions/ponder/scenes/MechanicalConduitScenes.java

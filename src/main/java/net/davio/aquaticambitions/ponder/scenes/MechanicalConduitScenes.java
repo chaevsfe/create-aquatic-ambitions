@@ -1,35 +1,38 @@
 package net.davio.aquaticambitions.ponder.scenes;
 
-import com.simibubi.create.AllFluids;
-import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
-import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
-import net.createmod.catnip.math.Pointing;
-import net.createmod.catnip.math.VecHelper;
-import net.createmod.ponder.api.PonderPalette;
-import net.createmod.ponder.api.element.ElementLink;
-import net.createmod.ponder.api.element.ParrotElement;
-import net.createmod.ponder.api.element.ParrotPose;
-import net.createmod.ponder.api.element.WorldSectionElement;
-import net.createmod.ponder.api.scene.SceneBuilder;
-import net.createmod.ponder.api.scene.SceneBuildingUtil;
-import net.createmod.ponder.api.scene.Selection;
+import com.zurrtum.create.AllFluids;
+import com.zurrtum.create.catnip.math.Pointing;
+import com.zurrtum.create.catnip.math.VecHelper;
+import com.zurrtum.create.client.foundation.ponder.CreateSceneBuilder;
+import com.zurrtum.create.client.ponder.api.PonderPalette;
+import com.zurrtum.create.client.ponder.api.element.ElementLink;
+import com.zurrtum.create.client.ponder.api.element.ParrotElement;
+import com.zurrtum.create.client.ponder.api.element.ParrotPose;
+import com.zurrtum.create.client.ponder.api.element.WorldSectionElement;
+import com.zurrtum.create.client.ponder.api.scene.SceneBuilder;
+import com.zurrtum.create.client.ponder.api.scene.SceneBuildingUtil;
+import com.zurrtum.create.client.ponder.api.scene.Selection;
+import com.zurrtum.create.content.fluids.tank.FluidTankBlockEntity;
+import com.zurrtum.create.infrastructure.fluids.FluidStack;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitBlock;
+import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitBlockEntity;
 import net.davio.aquaticambitions.registry.CAAIcons;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
+@Environment(EnvType.CLIENT)
 public class MechanicalConduitScenes {
 
     public static void awaken(SceneBuilder builder, SceneBuildingUtil util) {
@@ -287,8 +290,8 @@ public class MechanicalConduitScenes {
         scene.idle(10);
 
         Vec3 itemVec = util.vector().topOf(birbPos).add(0, 0.3, 0);
-        ColorParticleOption conduitParticle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(255, 1950417));
-        ColorParticleOption fireResParticle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, FastColor.ARGB32.color(255, 16750848));
+        ColorParticleOption conduitParticle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, ARGB.color(255, 1950417));
+        ColorParticleOption fireResParticle = ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, ARGB.color(255, 16750848));
 
         scene.overlay().showText(70)
                 .text("Pumping water into a Conduit Cage will provide the Conduit Power Effect to nearby entities")
@@ -307,7 +310,7 @@ public class MechanicalConduitScenes {
 
         for (int i = 0; i < 16; i++) {
             scene.world().modifyBlockEntity(tankStart, FluidTankBlockEntity.class, be -> be.getTankInventory()
-                    .drain(1000, IFluidHandler.FluidAction.EXECUTE));
+                    .extractAny(1000 * MechanicalConduitBlockEntity.DROPLETS_PER_MILLIBUCKET));
             scene.idle(1);
         }
 
@@ -315,11 +318,11 @@ public class MechanicalConduitScenes {
 
         scene.idle(10);
 
-        FluidStack content = new FluidStack(AllFluids.POTION.get().getSource(), 1000);
+        FluidStack content = new FluidStack(AllFluids.POTION, 1000 * MechanicalConduitBlockEntity.DROPLETS_PER_MILLIBUCKET);
         content.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.LONG_FIRE_RESISTANCE));
         for (int i = 0; i < 16; i++) {
             scene.world().modifyBlockEntity(tankStart, FluidTankBlockEntity.class, be -> be.getTankInventory()
-                    .fill(content, IFluidHandler.FluidAction.EXECUTE));
+                    .insert(content.copy()));
             scene.idle(1);
         }
 

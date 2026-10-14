@@ -33,16 +33,6 @@ loom {
     }
 }
 
-sourceSets {
-    main {
-        java {
-            exclude(rootProject.file("deferred/excludes.txt").readLines()
-                .map { it.trim() }
-                .filter { it.isNotEmpty() })
-        }
-    }
-}
-
 dependencies {
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
     implementation("net.fabricmc:fabric-loader:${property("fabric_loader_version")}")

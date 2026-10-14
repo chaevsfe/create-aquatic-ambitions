@@ -6,11 +6,13 @@ import com.zurrtum.create.client.catnip.lang.FontHelper;
 import com.zurrtum.create.client.foundation.item.ItemDescription;
 import com.zurrtum.create.client.foundation.item.KineticStats;
 import com.zurrtum.create.client.foundation.item.TooltipModifier;
+import com.zurrtum.create.client.ponder.foundation.PonderIndex;
 import net.davio.aquaticambitions.content.processing.conduit.EntitySelectionModeScroll;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitAnimation;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitGoggles;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitRenderer;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitVisual;
+import net.davio.aquaticambitions.ponder.CAAPonderPlugin;
 import net.davio.aquaticambitions.ponder.util.fakeConduitEntity.FakeConduitRenderer;
 import net.davio.aquaticambitions.registry.CAABlockEntityTypes;
 import net.davio.aquaticambitions.registry.CAAPartials;
@@ -29,6 +31,7 @@ public class CreateAquaticAmbitionsClient implements ClientModInitializer {
         registerRenderers();
         registerBehaviours();
         registerTooltipModifiers();
+        PonderIndex.addPlugin(new CAAPonderPlugin());
     }
 
     private static void registerRenderers() {

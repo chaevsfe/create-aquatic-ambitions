@@ -1,12 +1,14 @@
 package net.davio.aquaticambitions.ponder.scenes;
 
-import com.simibubi.create.AllBlocks;
-import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
-import net.createmod.catnip.math.Pointing;
-import net.createmod.ponder.api.PonderPalette;
-import net.createmod.ponder.api.scene.SceneBuilder;
-import net.createmod.ponder.api.scene.SceneBuildingUtil;
-import net.createmod.ponder.api.scene.Selection;
+import com.zurrtum.create.AllBlocks;
+import com.zurrtum.create.catnip.math.Pointing;
+import com.zurrtum.create.client.foundation.ponder.CreateSceneBuilder;
+import com.zurrtum.create.client.ponder.api.PonderPalette;
+import com.zurrtum.create.client.ponder.api.scene.SceneBuilder;
+import com.zurrtum.create.client.ponder.api.scene.SceneBuildingUtil;
+import com.zurrtum.create.client.ponder.api.scene.Selection;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +16,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
+@Environment(EnvType.CLIENT)
 public class ConduitScenes {
 
     public static void processing(SceneBuilder builder, SceneBuildingUtil util) {
@@ -92,8 +95,8 @@ public class ConduitScenes {
         
         scene.idle(10);
 
-        scene.world().setBlocks(depot, AllBlocks.DEPOT.getDefaultState(), false);
-        scene.world().setBlocks(belowDepot, Blocks.WHITE_CONCRETE.defaultBlockState(), false);
+        scene.world().setBlocks(depot, AllBlocks.DEPOT.defaultBlockState(), false);
+        scene.world().setBlocks(belowDepot, Blocks.CONCRETE.white().defaultBlockState(), false);
 
         scene.world().showSection(depotSelection, Direction.UP);
 
