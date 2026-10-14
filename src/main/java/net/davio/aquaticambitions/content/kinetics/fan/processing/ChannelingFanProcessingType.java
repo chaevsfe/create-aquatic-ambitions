@@ -1,8 +1,8 @@
 package net.davio.aquaticambitions.content.kinetics.fan.processing;
 
-import com.simibubi.create.content.kinetics.fan.processing.FanProcessingType;
-import com.simibubi.create.foundation.recipe.RecipeApplier;
-import net.createmod.catnip.theme.Color;
+import com.zurrtum.create.catnip.theme.Color;
+import com.zurrtum.create.content.kinetics.fan.processing.FanProcessingType;
+import com.zurrtum.create.foundation.recipe.RecipeApplier;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitBlock.ConduitPowerLevel;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitBlockEntity;
 import net.davio.aquaticambitions.registry.CAARecipeTypes;
@@ -11,6 +11,7 @@ import net.davio.aquaticambitions.registry.CAATags.CAAFluidTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -38,9 +38,6 @@ public class ChannelingFanProcessingType implements FanProcessingType {
             return true;
         }
 
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-
-        //Check for matching tags.
         FluidState fluidState = level.getFluidState(pos);
         BlockState blockState = level.getBlockState(pos);
 
@@ -55,36 +52,33 @@ public class ChannelingFanProcessingType implements FanProcessingType {
 
     @Override
     public boolean canProcess(ItemStack stack, Level level) {
-        var recipeManager = level.getRecipeManager();
-        var input = new SingleRecipeInput(stack);
-        return recipeManager
-                .getRecipeFor(CAARecipeTypes.CHANNELING.getType(), input, level)
-                .isPresent();
+        return level.recipeAccess()
+                .propertySet(CAARecipeTypes.CHANNELING.propertySet)
+                .test(stack);
     }
 
     @Override
     public @Nullable List<ItemStack> process(ItemStack stack, Level level) {
-        var recipeManager = level.getRecipeManager();
-        var input = new SingleRecipeInput(stack);
-        return recipeManager
-                .getRecipeFor(CAARecipeTypes.CHANNELING.getType(), input, level)
-                .map(recipe -> RecipeApplier.applyRecipeOn(level, stack, recipe.value(), true))
+        SingleRecipeInput input = new SingleRecipeInput(stack);
+        return ((ServerLevel) level).recipeAccess()
+                .getRecipeFor(CAARecipeTypes.CHANNELING.<SingleRecipeInput, ChannelingRecipe>getType(), input, level)
+                .map(recipe -> RecipeApplier.applyRecipeOn(level.getRandom(), stack.getCount(), input, recipe.value()))
                 .orElse(null);
     }
 
     @Override
     public void spawnProcessingParticles(Level level, Vec3 pos) {
-        if (level.random.nextInt(8) != 0)
+        if (level.getRandom().nextInt(8) != 0)
             return;
-        Vector3f color = new Color(0x0055FF).asVectorF();
-        level.addParticle(new DustParticleOptions(color, 1), pos.x + (level.random.nextFloat() - .5f) * .5f,
-                pos.y + .5f, pos.z + (level.random.nextFloat() - .5f) * .5f, 0, 1 / 8f, 0);
-        if (level.random.nextInt(8) < 2) {
-            level.addParticle(ParticleTypes.NAUTILUS, pos.x + (level.random.nextFloat() - .5f) * .5f,
-                    pos.y + .5f, pos.z + (level.random.nextFloat() - .5f) * .5f, (level.random.nextFloat() - .5f), (level.random.nextFloat() - .5f), (level.random.nextFloat() - .5f));
-        } else if (level.random.nextInt(8) < 4) {
-            level.addParticle(ParticleTypes.ENCHANT, pos.x + (level.random.nextFloat() - .5f) * .5f,
-                    pos.y + .5f, pos.z + (level.random.nextFloat() - .5f) * .5f, (level.random.nextFloat() - .5f), (level.random.nextFloat() - .5f), (level.random.nextFloat() - .5f));
+        RandomSource random = level.getRandom();
+        level.addParticle(new DustParticleOptions(0x0055FF, 1), pos.x + (random.nextFloat() - .5f) * .5f,
+                pos.y + .5f, pos.z + (random.nextFloat() - .5f) * .5f, 0, 1 / 8f, 0);
+        if (random.nextInt(8) < 2) {
+            level.addParticle(ParticleTypes.NAUTILUS, pos.x + (random.nextFloat() - .5f) * .5f,
+                    pos.y + .5f, pos.z + (random.nextFloat() - .5f) * .5f, (random.nextFloat() - .5f), (random.nextFloat() - .5f), (random.nextFloat() - .5f));
+        } else if (random.nextInt(8) < 4) {
+            level.addParticle(ParticleTypes.ENCHANT, pos.x + (random.nextFloat() - .5f) * .5f,
+                    pos.y + .5f, pos.z + (random.nextFloat() - .5f) * .5f, (random.nextFloat() - .5f), (random.nextFloat() - .5f), (random.nextFloat() - .5f));
         }
     }
 
@@ -104,39 +98,30 @@ public class ChannelingFanProcessingType implements FanProcessingType {
 
     @Override
     public void affectEntity(Entity entity, Level level) {
-        if (level.isClientSide){
+        if (level.isClientSide()) {
             return;
         }
 
-        if (entity instanceof Player){
-            ((Player) entity).addEffect(new MobEffectInstance(MobEffects.CONDUIT_POWER, 260, 0, true, true));
+        if (entity instanceof Player player) {
+            player.addEffect(new MobEffectInstance(MobEffects.CONDUIT_POWER, 260, 0, true, true));
         }
     }
 
     public boolean checkForActiveConduit(Level level, BlockPos pos) {
-        //Check if any blockEntity in 3x3 box is an active conduit.
-        //This (and priority = 1200) allows us to prevent washing process to override channeling in the 3x3 conduit box
-        for(int i = -1; i <= 1; ++i) {
-            for(int j = -1; j <= 1; ++j) {
-                for(int k = -1; k <= 1; ++k) {
+        for (int i = -1; i <= 1; ++i) {
+            for (int j = -1; j <= 1; ++j) {
+                for (int k = -1; k <= 1; ++k) {
                     BlockPos adjacentPos = pos.offset(i, j, k);
                     BlockEntity blockEntity = level.getBlockEntity(adjacentPos);
-                    if (blockEntity instanceof ConduitBlockEntity){
-                        if(((ConduitBlockEntity) blockEntity).isActive()){
-                            return true;
-                        }
+                    if (blockEntity instanceof ConduitBlockEntity conduit && conduit.isActive()) {
+                        return true;
                     }
                 }
             }
         }
 
-        BlockEntity blockEntity = level.getBlockEntity(pos);
-
-        if (blockEntity != null) {
-            if (blockEntity instanceof MechanicalConduitBlockEntity) {
-                ConduitPowerLevel powerLevel = ((MechanicalConduitBlockEntity) blockEntity).getConduitLevelFromBlock();
-                return powerLevel == ConduitPowerLevel.AWAKENED;
-            }
+        if (level.getBlockEntity(pos) instanceof MechanicalConduitBlockEntity conduitCage) {
+            return conduitCage.getConduitLevelFromBlock() == ConduitPowerLevel.AWAKENED;
         }
 
         return false;
