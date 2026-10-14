@@ -1,7 +1,7 @@
 package net.davio.aquaticambitions.infrastructure.config;
 
-import net.createmod.catnip.config.ConfigBase;
-import net.createmod.catnip.config.ui.ConfigAnnotations;
+import com.zurrtum.create.catnip.config.ConfigBase;
+import com.zurrtum.create.catnip.config.ui.ConfigAnnotations;
 
 public class CAAConduitCageConfig extends ConfigBase {
     public final ConfigInt conduitCageRange = i(32, 4,96,

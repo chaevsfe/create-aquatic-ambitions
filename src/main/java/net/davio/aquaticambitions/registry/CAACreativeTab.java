@@ -1,24 +1,22 @@
 package net.davio.aquaticambitions.registry;
 
-import com.simibubi.create.AllCreativeModeTabs;
 import net.davio.aquaticambitions.CreateAquaticAmbitions;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-
 
 public class CAACreativeTab {
 
-    private static final DeferredRegister<CreativeModeTab> REGISTER =
-            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreateAquaticAmbitions.MODID);
+    public static final ResourceKey<CreativeModeTab> MAIN_TAB_KEY =
+            ResourceKey.create(Registries.CREATIVE_MODE_TAB, CreateAquaticAmbitions.asResource("tab"));
 
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = REGISTER.register("tab",
-        () -> CreativeModeTab.builder()
+    public static final CreativeModeTab MAIN_TAB = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, MAIN_TAB_KEY,
+        FabricCreativeModeTab.builder()
             .title(Component.translatableWithFallback("itemGroup.create_aquatic_ambitions.base", "Create Aquatic Ambitions"))
-            .withTabsBefore(AllCreativeModeTabs.PALETTES_CREATIVE_TAB .getKey())
             .icon(CAAItems.PRISMARINE_ALLOY::asStack)
             .displayItems(((itemDisplayParameters, output) -> {
 
@@ -33,7 +31,6 @@ public class CAACreativeTab {
             }))
             .build());
 
-    public static void register(IEventBus modEventBus) {
-        REGISTER.register(modEventBus);
+    public static void register() {
     }
 }
