@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"4": "create_aquatic_ambitions:block/wind",
-		"5": "create_aquatic_ambitions:block/wind_vertical",
+		"4": "minecraft:entity/conduit/wind",
+		"5": "minecraft:entity/conduit/wind_vertical",
 		"particle": "entity/conduit/cage"
 	},
 	"elements": [
