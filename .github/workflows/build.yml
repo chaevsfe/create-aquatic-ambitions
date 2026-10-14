@@ -1,6 +1,6 @@
 name: Build
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
@@ -12,14 +12,29 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Setup JDK 21
+      - name: Setup JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'temurin'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Fetch the Create Fly Recipe Viewer jar this mod nests and compiles against
+        env:
+          VIEWER_JAR_NAME: CreateReiViewer-1.0.2+fly-mc26.2.jar
+          VIEWER_JAR_URL: https://github.com/chaevsfe/CreateReiViewer-Fly/releases/download/1.0.2%2Bfly-mc26.2/CreateReiViewer-1.0.2%2Bfly-mc26.2.jar
+        run: |
+          mkdir -p libs
+          curl -fsSL -o "libs/$VIEWER_JAR_NAME" "$VIEWER_JAR_URL"
+
+      - name: Build from scratch
+        run: ./gradlew clean build --no-build-cache --no-daemon
+
+      - name: Upload jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: create_aquatic_ambitions-fabric-26.2
+          path: build/libs/*.jar
+          if-no-files-found: error

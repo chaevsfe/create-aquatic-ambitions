@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "create_aquatic_ambitions",
+  "version": "${version}",
+  "name": "Create Fly: Aquatic Ambitions",
+  "description": "Create: Aquatic Ambitions port for Create Fly ${mc_line}. The Conduit Cage, Channeling fan processing and aquatic recipes.",
+  "authors": [
+    "Davi Oliva",
+    "chaevsfe"
+  ],
+  "contributors": [
+    "wolfieboy09",
+    "AZer0",
+    "PrincessStellar",
+    "Korben",
+    "Tenwoc",
+    "TelluriumElement",
+    "LogicWheat"
+  ],
+  "contact": {
+    "homepage": "https://github.com/chaevsfe/create-aquatic-ambitions",
+    "sources": "https://github.com/chaevsfe/create-aquatic-ambitions",
+    "issues": "https://github.com/chaevsfe/create-aquatic-ambitions/issues",
+    "upstream": "https://modrinth.com/mod/9SyaPzp7"
+  },
+  "license": [
+    "MIT"
+  ],
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.davio.aquaticambitions.CreateAquaticAmbitions"
+    ],
+    "create_plugin": [
+      "net.davio.aquaticambitions.CreateAquaticAmbitionsPlugin"
+    ]
+  },
+  "depends": {
+    "minecraft": "${minecraft_dependency_version}",
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "create": "${create_fabric_version_range}",
+    "java": ">=25"
+  },
+  "suggests": {
+    "createreiviewer": "*",
+    "roughlyenoughitems": "*",
+    "jei": "*"
+  }
+}
