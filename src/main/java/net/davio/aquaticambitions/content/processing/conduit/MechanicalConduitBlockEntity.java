@@ -31,6 +31,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.cubemob.AbstractCubeMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -374,9 +375,13 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
             case EVERYONE -> true;
             case PLAYERS -> entity instanceof Player;
             case MONSTERS -> entity instanceof Enemy;
-            case FRIENDLY_MOBS -> entity instanceof PathfinderMob && !(entity instanceof Monster);
-            case PLAYERS_FRIENDLY_MOBS -> entity instanceof PathfinderMob && !(entity instanceof Monster) || (entity instanceof Player);
+            case FRIENDLY_MOBS -> isFriendlyMob(entity);
+            case PLAYERS_FRIENDLY_MOBS -> isFriendlyMob(entity) || (entity instanceof Player);
         };
+    }
+
+    private static boolean isFriendlyMob(LivingEntity entity) {
+        return entity instanceof PathfinderMob && !(entity instanceof Monster) && !(entity instanceof AbstractCubeMob);
     }
 
     public String tickToDuration(int tickAmount) {
