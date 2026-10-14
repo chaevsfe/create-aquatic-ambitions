@@ -36,6 +36,12 @@
     ],
     "create_plugin": [
       "net.davio.aquaticambitions.CreateAquaticAmbitionsPlugin"
+    ],
+    "createreiviewer": [
+      "net.davio.aquaticambitions.compat.viewer.CAAViewerPlugin"
+    ],
+    "createreiviewer_client": [
+      "net.davio.aquaticambitions.compat.viewer.CAAViewerClientPlugin"
     ]
   },
   "depends": {

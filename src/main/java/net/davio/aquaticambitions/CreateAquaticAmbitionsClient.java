@@ -7,6 +7,7 @@ import com.zurrtum.create.client.foundation.item.ItemDescription;
 import com.zurrtum.create.client.foundation.item.KineticStats;
 import com.zurrtum.create.client.foundation.item.TooltipModifier;
 import com.zurrtum.create.client.ponder.foundation.PonderIndex;
+import net.davio.aquaticambitions.client.ConduitFanRenderer;
 import net.davio.aquaticambitions.content.processing.conduit.EntitySelectionModeScroll;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitAnimation;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitGoggles;
@@ -19,6 +20,7 @@ import net.davio.aquaticambitions.registry.CAAPartials;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 
@@ -31,6 +33,7 @@ public class CreateAquaticAmbitionsClient implements ClientModInitializer {
         registerRenderers();
         registerBehaviours();
         registerTooltipModifiers();
+        PictureInPictureRendererRegistry.register(context -> new ConduitFanRenderer());
         PonderIndex.addPlugin(new CAAPonderPlugin());
     }
 

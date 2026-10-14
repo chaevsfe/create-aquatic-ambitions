@@ -1,6 +1,7 @@
 package net.davio.aquaticambitions;
 
 import com.mojang.logging.LogUtils;
+import net.davio.aquaticambitions.compat.CAARecipeSync;
 import net.davio.aquaticambitions.content.logistics.CAAItemAttributes;
 import net.davio.aquaticambitions.infrastructure.config.CAAConfig;
 import net.davio.aquaticambitions.infrastructure.loot.CAALootModifiers;
@@ -34,6 +35,7 @@ public class CreateAquaticAmbitions implements ModInitializer {
         CAAItemAttributes.register();
         CAARegistries.register();
         CAALootModifiers.register();
+        CAARecipeSync.register();
     }
 
     public static Identifier asResource(String path) {
