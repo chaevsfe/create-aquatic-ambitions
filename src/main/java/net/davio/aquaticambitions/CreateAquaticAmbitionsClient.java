@@ -1,30 +1,35 @@
 package net.davio.aquaticambitions;
 
-import net.createmod.ponder.foundation.PonderIndex;
-import net.davio.aquaticambitions.ponder.CAAPonderPlugin;
+import com.zurrtum.create.client.AllBlockEntityBehaviours;
+import com.zurrtum.create.client.AllBlockEntityRenders;
+import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitAnimation;
+import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitRenderer;
+import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitVisual;
+import net.davio.aquaticambitions.ponder.util.fakeConduitEntity.FakeConduitRenderer;
+import net.davio.aquaticambitions.registry.CAABlockEntityTypes;
 import net.davio.aquaticambitions.registry.CAAPartials;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
-@Mod(value = CreateAquaticAmbitions.MODID, dist = Dist.CLIENT)
-public class CreateAquaticAmbitionsClient {
+@Environment(EnvType.CLIENT)
+public class CreateAquaticAmbitionsClient implements ClientModInitializer {
 
-    public CreateAquaticAmbitionsClient() {
+    @Override
+    public void onInitializeClient() {
         CAAPartials.init();
-        PonderIndex.addPlugin(new CAAPonderPlugin());
+        registerRenderers();
+        registerBehaviours();
     }
 
-    public static void onCtorClient(IEventBus modEventBus) {
-
-        IEventBus neoEventBus = NeoForge.EVENT_BUS;
-        modEventBus.addListener(CreateAquaticAmbitionsClient::clientInit);
-
+    private static void registerRenderers() {
+        AllBlockEntityRenders.visual(CAABlockEntityTypes.MECHANICAL_CONDUIT.get(), MechanicalConduitRenderer::new,
+                MechanicalConduitVisual::new, be -> true);
+        AllBlockEntityRenders.render(CAABlockEntityTypes.FAKE_CONDUIT.get(), FakeConduitRenderer::new);
     }
 
-    public static void clientInit(final FMLClientSetupEvent event) {
-        //PonderIndex.addPlugin(new CAAPonderPlugin());
+    private static void registerBehaviours() {
+        AllBlockEntityBehaviours.add(CAABlockEntityTypes.MECHANICAL_CONDUIT.get(),
+                MechanicalConduitAnimation::new);
     }
 }

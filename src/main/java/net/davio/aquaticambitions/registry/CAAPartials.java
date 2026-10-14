@@ -1,8 +1,11 @@
 package net.davio.aquaticambitions.registry;
 
-import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import com.zurrtum.create.client.flywheel.lib.model.baked.PartialModel;
 import net.davio.aquaticambitions.CreateAquaticAmbitions;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+@Environment(EnvType.CLIENT)
 public class CAAPartials {
     public static final PartialModel
 

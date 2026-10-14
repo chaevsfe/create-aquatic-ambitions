@@ -1,80 +1,84 @@
 package net.davio.aquaticambitions.ponder.util.fakeConduitEntity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.render.SuperByteBuffer;
+import com.zurrtum.create.client.catnip.animation.AnimationTickHolder;
+import com.zurrtum.create.client.catnip.render.CachedBuffers;
+import com.zurrtum.create.client.catnip.render.SuperByteBuffer;
+import com.zurrtum.create.client.catnip.render.SuperByteBufferRenderState;
 import net.davio.aquaticambitions.registry.CAAPartials;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer.CrumblingOverlay;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class FakeConduitRenderer extends SafeBlockEntityRenderer<FakeActiveConduitBlockEntity> {
+import java.util.ArrayList;
+import java.util.List;
 
-    //The ENTIRE point of this block is being able to render a conduit in ponder scenes.
-    //It will not be available anywhere but with commands
+@Environment(EnvType.CLIENT)
+public class FakeConduitRenderer implements BlockEntityRenderer<FakeActiveConduitBlockEntity, FakeConduitRenderer.FakeConduitRenderState> {
 
-    public FakeConduitRenderer(BlockEntityRendererProvider.Context context) {};
+    public FakeConduitRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    protected void renderSafe(FakeActiveConduitBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light, int overlay) {
-        Level level = be.getLevel();
-        BlockState blockState = be.getBlockState();
-        int hashCode = be.hashCode();
-
-        renderShared(ms, null, bufferSource,
-                level, blockState, hashCode);
+    public FakeConduitRenderState createRenderState() {
+        return new FakeConduitRenderState();
     }
 
-    private void renderShared(PoseStack ms, @Nullable PoseStack modelTransform, MultiBufferSource bufferSource,
-        Level level, BlockState blockState, int hashCode) {
+    @Override
+    public void extractRenderState(FakeActiveConduitBlockEntity be, FakeConduitRenderState state, float partialTicks, Vec3 cameraPos, @Nullable CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(be, state, crumblingOverlay);
+        state.parts.clear();
+        extractShared(state.parts, be.getLevel(), be.getBlockState());
+    }
+
+    private static void extractShared(List<SuperByteBufferRenderState> parts, Level level, BlockState blockState) {
 
         float time = AnimationTickHolder.getRenderTime(level);
         float eyeY = Mth.DEG_TO_RAD*15*(Mth.sin(((time * 4f) % 360)*Mth.DEG_TO_RAD));
         float rotateYZ = Mth.DEG_TO_RAD*(time * 2f) % 360;
         float rotateX = Mth.DEG_TO_RAD*30*(Mth.sin(((time * 2f) % 360)*Mth.DEG_TO_RAD));
 
-        VertexConsumer solid = bufferSource.getBuffer(RenderType.solid());
-        VertexConsumer cutout = bufferSource.getBuffer(RenderType.cutoutMipped());
-
-        ms.pushPose();
-
         SuperByteBuffer headBuffer = CachedBuffers.partial(CAAPartials.CONDUIT_EYE, blockState);
-        if (modelTransform != null)
-            headBuffer.transform(modelTransform);
         headBuffer.translate(0, eyeY, 0);
-        draw(headBuffer, 45, ms, bufferSource.getBuffer(RenderType.cutout()));
+        parts.add(draw(headBuffer, 45));
 
         SuperByteBuffer cageBuffer = CachedBuffers.partial(CAAPartials.CONDUIT_CAGE, blockState);
-        if (modelTransform != null)
-            cageBuffer.transform(modelTransform);
         cageBuffer
                 .translate(0, eyeY, 0)
                 .rotateXCentered(rotateX)
                 .rotateZCentered(rotateYZ);
-        draw(cageBuffer, rotateYZ, ms, bufferSource.getBuffer(RenderType.cutout()));
+        parts.add(draw(cageBuffer, rotateYZ));
 
         SuperByteBuffer windBuffer = CachedBuffers.partial(CAAPartials.CONDUIT_WIND, blockState);
-        if (modelTransform != null)
-            windBuffer.transform(modelTransform);
         windBuffer
         .translate(0, 0, 0);
-        draw(windBuffer, 0, ms, bufferSource.getBuffer(RenderType.cutout()));
-
-        ms.popPose();
+        parts.add(draw(windBuffer, 0));
     }
 
-    private static void draw(SuperByteBuffer buffer, float horizontalAngle, PoseStack ms, VertexConsumer vc) {
-        buffer.rotateCentered(horizontalAngle, Direction.UP)
-                .light(LightTexture.FULL_BRIGHT)
-                .renderInto(ms, vc);
-    };
+    private static SuperByteBufferRenderState draw(SuperByteBuffer buffer, float horizontalAngle) {
+        return buffer.rotateCentered(horizontalAngle, Direction.UP)
+                .light(LightCoordsUtil.FULL_BRIGHT)
+                .extractRenderState();
+    }
+
+    @Override
+    public void submit(FakeConduitRenderState state, PoseStack ms, SubmitNodeCollector queue, CameraRenderState cameraState) {
+        for (SuperByteBufferRenderState part : state.parts)
+            part.submit(ms, queue);
+    }
+
+    public static class FakeConduitRenderState extends BlockEntityRenderState {
+        public final List<SuperByteBufferRenderState> parts = new ArrayList<>();
+    }
 }

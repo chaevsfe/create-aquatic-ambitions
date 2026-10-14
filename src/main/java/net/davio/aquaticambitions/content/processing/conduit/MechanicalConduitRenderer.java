@@ -1,30 +1,49 @@
 package net.davio.aquaticambitions.content.processing.conduit;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.math.AngleHelper;
-import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.render.SuperByteBuffer;
+import com.zurrtum.create.catnip.math.AngleHelper;
+import com.zurrtum.create.client.catnip.animation.AnimationTickHolder;
+import com.zurrtum.create.client.catnip.render.CachedBuffers;
+import com.zurrtum.create.client.catnip.render.SuperByteBuffer;
+import com.zurrtum.create.client.catnip.render.SuperByteBufferRenderState;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitBlock.ConduitPowerLevel;
 import net.davio.aquaticambitions.registry.CAAPartials;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer.CrumblingOverlay;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class MechanicalConduitRenderer extends SafeBlockEntityRenderer<MechanicalConduitBlockEntity> {
+import java.util.ArrayList;
+import java.util.List;
 
-    public MechanicalConduitRenderer(BlockEntityRendererProvider.Context context) {};
+@Environment(EnvType.CLIENT)
+public class MechanicalConduitRenderer implements BlockEntityRenderer<MechanicalConduitBlockEntity, MechanicalConduitRenderer.ConduitRenderState> {
+
+    public static final int FULL_BLOCK_LIGHT = LightCoordsUtil.pack(15, 0);
+
+    public MechanicalConduitRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    protected void renderSafe(MechanicalConduitBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource, int light, int overlay) {
+    public ConduitRenderState createRenderState() {
+        return new ConduitRenderState();
+    }
+
+    @Override
+    public void extractRenderState(MechanicalConduitBlockEntity be, ConduitRenderState state, float partialTicks, Vec3 cameraPos, @Nullable CrumblingOverlay crumblingOverlay) {
+        BlockEntityRenderState.extractBase(be, state, crumblingOverlay);
+        state.parts.clear();
+
         ConduitPowerLevel conduitLevel = be.getConduitLevelFromBlock();
 
         Level level = be.getLevel();
@@ -33,12 +52,11 @@ public class MechanicalConduitRenderer extends SafeBlockEntityRenderer<Mechanica
         float eyeAngle = AngleHelper.rad(be.eyeAngle.getValue(partialTicks));
         int hashCode = be.hashCode();
 
-        renderShared(ms, null, bufferSource,
-                level, blockState, conduitLevel, animation, eyeAngle, hashCode);
+        extractShared(state.parts, level, blockState, conduitLevel, animation, eyeAngle, hashCode);
     }
 
-    private void renderShared(PoseStack ms, @Nullable PoseStack modelTransform, MultiBufferSource bufferSource,
-                              Level level, BlockState blockState, ConduitPowerLevel conduitLevel, float animation, float playerTrackAngle, int hashCode) {
+    private static void extractShared(List<SuperByteBufferRenderState> parts, Level level, BlockState blockState,
+                                      ConduitPowerLevel conduitLevel, float animation, float playerTrackAngle, int hashCode) {
 
         float time = AnimationTickHolder.getRenderTime(level);
         float renderTick = time + (hashCode % 13) * 16f;
@@ -48,59 +66,38 @@ public class MechanicalConduitRenderer extends SafeBlockEntityRenderer<Mechanica
         float rotateYZ = Mth.DEG_TO_RAD * (time * 2f) % 360;
         float rotateX = Mth.DEG_TO_RAD * 30 * (Mth.sin(((time * 2f) % 360) * Mth.DEG_TO_RAD));
 
-        VertexConsumer solid = bufferSource.getBuffer(RenderType.solid());
-        VertexConsumer cutout = bufferSource.getBuffer(RenderType.cutoutMipped());
-
-        ms.pushPose();
-
-        var eyeModel = CAAPartials.CONDUIT_EYE;
-        var cageModel = CAAPartials.CONDUIT_CAGE;
-        var inactiveModel = CAAPartials.INACTIVE_CONDUIT;
-
-        if (eyeModel == null) {
-            ms.popPose();
-            return;
-        }
-
-        SuperByteBuffer eyeBuffer = CachedBuffers.partial(eyeModel, blockState);
-        if (modelTransform != null)
-            eyeBuffer.transform(modelTransform);
+        SuperByteBuffer eyeBuffer = CachedBuffers.partial(CAAPartials.CONDUIT_EYE, blockState);
         eyeBuffer.translate(0, eyeY, 0);
-        draw(eyeBuffer, playerTrackAngle, ms, bufferSource.getBuffer(RenderType.cutout()));
+        parts.add(draw(eyeBuffer, playerTrackAngle));
 
         if (conduitLevel.isAwakened()) {
-            if (cageModel == null) {
-                ms.popPose();
-                return;
-            }
-
-            SuperByteBuffer cageBuffer = CachedBuffers.partial(cageModel, blockState);
-            if (modelTransform != null)
-                cageBuffer.transform(modelTransform);
+            SuperByteBuffer cageBuffer = CachedBuffers.partial(CAAPartials.CONDUIT_CAGE, blockState);
             cageBuffer
                     .translate(0, eyeY, 0)
                     .rotateXCentered(rotateX)
                     .rotateZCentered(rotateYZ);
-            draw(cageBuffer, rotateYZ, ms, bufferSource.getBuffer(RenderType.cutout()));
+            parts.add(draw(cageBuffer, rotateYZ));
 
         } else {
-            if (inactiveModel == null) {
-                ms.popPose();
-                return;
-            }
-            SuperByteBuffer inactiveConduitBuffer = CachedBuffers.partial(inactiveModel, blockState);
-            if (modelTransform != null)
-                inactiveConduitBuffer.transform(modelTransform);
+            SuperByteBuffer inactiveConduitBuffer = CachedBuffers.partial(CAAPartials.INACTIVE_CONDUIT, blockState);
             inactiveConduitBuffer.translate(0, eyeY, 0);
-            draw(inactiveConduitBuffer, playerTrackAngle, ms, bufferSource.getBuffer(RenderType.cutout()));
+            parts.add(draw(inactiveConduitBuffer, playerTrackAngle));
         }
-
-        ms.popPose();
     }
 
-    private static void draw(SuperByteBuffer buffer, float horizontalAngle, PoseStack ms, VertexConsumer vc) {
-        buffer.rotateCentered(horizontalAngle, Direction.UP)
-                .light(LightTexture.FULL_BLOCK)
-                .renderInto(ms, vc);
-    };
+    private static SuperByteBufferRenderState draw(SuperByteBuffer buffer, float horizontalAngle) {
+        return buffer.rotateCentered(horizontalAngle, Direction.UP)
+                .light(FULL_BLOCK_LIGHT)
+                .extractRenderState();
+    }
+
+    @Override
+    public void submit(ConduitRenderState state, PoseStack ms, SubmitNodeCollector queue, CameraRenderState cameraState) {
+        for (SuperByteBufferRenderState part : state.parts)
+            part.submit(ms, queue);
+    }
+
+    public static class ConduitRenderState extends BlockEntityRenderState {
+        public final List<SuperByteBufferRenderState> parts = new ArrayList<>();
+    }
 }

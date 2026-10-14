@@ -31,6 +31,9 @@
     "main": [
       "net.davio.aquaticambitions.CreateAquaticAmbitions"
     ],
+    "client": [
+      "net.davio.aquaticambitions.CreateAquaticAmbitionsClient"
+    ],
     "create_plugin": [
       "net.davio.aquaticambitions.CreateAquaticAmbitionsPlugin"
     ]

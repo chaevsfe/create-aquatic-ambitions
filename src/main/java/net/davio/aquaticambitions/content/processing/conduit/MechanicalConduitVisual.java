@@ -1,29 +1,31 @@
 package net.davio.aquaticambitions.content.processing.conduit;
 
-import dev.engine_room.flywheel.api.instance.Instance;
-import dev.engine_room.flywheel.api.visual.DynamicVisual;
-import dev.engine_room.flywheel.api.visual.TickableVisual;
-import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import dev.engine_room.flywheel.lib.instance.InstanceTypes;
-import dev.engine_room.flywheel.lib.instance.TransformedInstance;
-import dev.engine_room.flywheel.lib.model.Models;
-import dev.engine_room.flywheel.lib.transform.Translate;
-import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
-import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
-import dev.engine_room.flywheel.lib.visual.SimpleTickableVisual;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.math.AngleHelper;
+import com.zurrtum.create.catnip.math.AngleHelper;
+import com.zurrtum.create.client.catnip.animation.AnimationTickHolder;
+import com.zurrtum.create.client.flywheel.api.instance.Instance;
+import com.zurrtum.create.client.flywheel.api.visual.DynamicVisual;
+import com.zurrtum.create.client.flywheel.api.visual.TickableVisual;
+import com.zurrtum.create.client.flywheel.api.visualization.VisualizationContext;
+import com.zurrtum.create.client.flywheel.lib.instance.InstanceTypes;
+import com.zurrtum.create.client.flywheel.lib.instance.TransformedInstance;
+import com.zurrtum.create.client.flywheel.lib.model.Models;
+import com.zurrtum.create.client.flywheel.lib.transform.Translate;
+import com.zurrtum.create.client.flywheel.lib.visual.AbstractBlockEntityVisual;
+import com.zurrtum.create.client.flywheel.lib.visual.SimpleDynamicVisual;
+import com.zurrtum.create.client.flywheel.lib.visual.SimpleTickableVisual;
 import net.davio.aquaticambitions.content.processing.conduit.MechanicalConduitBlock.ConduitPowerLevel;
 import net.davio.aquaticambitions.registry.CAAPartials;
-import net.minecraft.client.renderer.LightTexture;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class MechanicalConduitVisual extends AbstractBlockEntityVisual<MechanicalConduitBlockEntity> implements SimpleDynamicVisual, SimpleTickableVisual {
 
-    private MechanicalConduitBlock.ConduitPowerLevel conduitPowerLevel;
+    private ConduitPowerLevel conduitPowerLevel;
 
 
     private final TransformedInstance eye;
@@ -40,14 +42,14 @@ public class MechanicalConduitVisual extends AbstractBlockEntityVisual<Mechanica
         eye = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(CAAPartials.CONDUIT_EYE))
                 .createInstance();
 
-        eye.light(LightTexture.FULL_BLOCK);
+        eye.light(MechanicalConduitRenderer.FULL_BLOCK_LIGHT);
 
         animate(partialTick);
     }
 
     @Override
     public void tick(TickableVisual.Context context) {
-        blockEntity.tickAnimation();
+        MechanicalConduitAnimation.tickAnimation(blockEntity);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class MechanicalConduitVisual extends AbstractBlockEntityVisual<Mechanica
                 cage = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(CAAPartials.CONDUIT_CAGE))
                         .createInstance();
 
-                cage.light(LightTexture.FULL_BLOCK);
+                cage.light(MechanicalConduitRenderer.FULL_BLOCK_LIGHT);
 
                 if (inactiveConduit != null) {
                     inactiveConduit.delete();
@@ -84,7 +86,7 @@ public class MechanicalConduitVisual extends AbstractBlockEntityVisual<Mechanica
                 inactiveConduit = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(CAAPartials.INACTIVE_CONDUIT))
                         .createInstance();
 
-                inactiveConduit.light(LightTexture.FULL_BLOCK);
+                inactiveConduit.light(MechanicalConduitRenderer.FULL_BLOCK_LIGHT);
 
                 if (cage != null) {
                     cage.delete();
