@@ -33,7 +33,7 @@ public class CreateAquaticAmbitionsClient implements ClientModInitializer {
         registerRenderers();
         registerBehaviours();
         registerTooltipModifiers();
-        PictureInPictureRendererRegistry.register(context -> new ConduitFanRenderer());
+        PictureInPictureRendererRegistry.register(context -> new ConduitFanRenderer(context.bufferSource()));
         PonderIndex.addPlugin(new CAAPonderPlugin());
     }
 

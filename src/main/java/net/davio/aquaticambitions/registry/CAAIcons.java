@@ -9,7 +9,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.LightCoordsUtil;
@@ -67,32 +68,31 @@ public class CAAIcons extends AllIcons {
     }
 
     @Override
-    public void submit(PoseStack ms, SubmitNodeCollector collector, int color) {
-        collector.submitCustomGeometry(ms, RenderTypes.text(ICON_ATLAS), new IconRenderState(iconX, iconY, color));
+    public RenderType bind() {
+        return RenderTypes.text(ICON_ATLAS);
     }
 
-    private record IconRenderState(int iconX, int iconY, int color) implements SubmitNodeCollector.CustomGeometryRenderer {
-        @Override
-        public void render(PoseStack.Pose pose, VertexConsumer builder) {
-            Matrix4f matrix = pose.pose();
-            int light = LightCoordsUtil.FULL_BRIGHT;
+    @Override
+    public void render(PoseStack ms, MultiBufferSource buffer, int color) {
+        VertexConsumer builder = buffer.getBuffer(RenderTypes.text(ICON_ATLAS));
+        Matrix4f matrix = ms.last().pose();
+        int light = LightCoordsUtil.FULL_BRIGHT;
 
-            float u1 = iconX * 1f / ATLAS_SIZE;
-            float u2 = (iconX + 16) * 1f / ATLAS_SIZE;
-            float v1 = iconY * 1f / ATLAS_SIZE;
-            float v2 = (iconY + 16) * 1f / ATLAS_SIZE;
+        float u1 = iconX * 1f / ATLAS_SIZE;
+        float u2 = (iconX + 16) * 1f / ATLAS_SIZE;
+        float v1 = iconY * 1f / ATLAS_SIZE;
+        float v2 = (iconY + 16) * 1f / ATLAS_SIZE;
 
-            vertex(builder, matrix, 0, 0, u1, v1, light);
-            vertex(builder, matrix, 0, 1, u1, v2, light);
-            vertex(builder, matrix, 1, 1, u2, v2, light);
-            vertex(builder, matrix, 1, 0, u2, v1, light);
-        }
+        vertex(builder, matrix, 0, 0, u1, v1, color, light);
+        vertex(builder, matrix, 0, 1, u1, v2, color, light);
+        vertex(builder, matrix, 1, 1, u2, v2, color, light);
+        vertex(builder, matrix, 1, 0, u2, v1, color, light);
+    }
 
-        private void vertex(VertexConsumer builder, Matrix4f matrix, float x, float y, float u, float v, int light) {
-            builder.addVertex(matrix, x, y, 0)
-                    .setColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, 255)
-                    .setUv(u, v)
-                    .setLight(light);
-        }
+    private static void vertex(VertexConsumer builder, Matrix4f matrix, float x, float y, float u, float v, int color, int light) {
+        builder.addVertex(matrix, x, y, 0)
+                .setColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, 255)
+                .setUv(u, v)
+                .setLight(light);
     }
 }

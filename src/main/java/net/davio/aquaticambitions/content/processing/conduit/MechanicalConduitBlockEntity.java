@@ -31,7 +31,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.cubemob.AbstractCubeMob;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -381,7 +381,7 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
     }
 
     private static boolean isFriendlyMob(LivingEntity entity) {
-        return entity instanceof PathfinderMob && !(entity instanceof Monster) && !(entity instanceof AbstractCubeMob);
+        return entity instanceof PathfinderMob && !(entity instanceof Monster) && !(entity instanceof Slime);
     }
 
     public String tickToDuration(int tickAmount) {

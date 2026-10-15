@@ -26,6 +26,7 @@ repositories {
 val recipeViewer = ":CreateReiViewer:${property("createreiviewer_version")}"
 
 loom {
+    accessWidenerPath = file("src/main/resources/create_aquatic_ambitions.accesswidener")
     mods {
         create("create_aquatic_ambitions") {
             sourceSet(sourceSets.main.get())
@@ -89,6 +90,7 @@ val allowedResourceRoots = listOf(
 )
 val allowedRootFiles = listOf(
     "fabric.mod.json",
+    "create_aquatic_ambitions.accesswidener",
     "LICENSE",
     "NOTICE",
 )

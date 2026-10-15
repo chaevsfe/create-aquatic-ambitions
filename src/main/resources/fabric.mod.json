@@ -44,6 +44,7 @@
       "net.davio.aquaticambitions.compat.viewer.CAAViewerClientPlugin"
     ]
   },
+  "accessWidener": "create_aquatic_ambitions.accesswidener",
   "depends": {
     "minecraft": "${minecraft_dependency_version}",
     "fabricloader": ">=${fabric_loader_version}",

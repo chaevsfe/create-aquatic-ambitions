@@ -20,7 +20,7 @@ public class CAABlocks {
 
     public static final BlockEntry<MechanicalConduitBlock> MECHANICAL_CONDUIT = REGISTRATE
             .block("mechanical_conduit", MechanicalConduitBlock::new)
-            .initialProperties(() -> Blocks.COPPER_BLOCK.weathering().unaffected())
+            .initialProperties(() -> Blocks.COPPER_BLOCK)
             .properties(p -> p
                     .mapColor(MapColor.COLOR_GRAY)
                     .noOcclusion()

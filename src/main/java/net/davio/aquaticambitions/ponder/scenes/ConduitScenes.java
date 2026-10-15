@@ -96,7 +96,7 @@ public class ConduitScenes {
         scene.idle(10);
 
         scene.world().setBlocks(depot, AllBlocks.DEPOT.defaultBlockState(), false);
-        scene.world().setBlocks(belowDepot, Blocks.CONCRETE.white().defaultBlockState(), false);
+        scene.world().setBlocks(belowDepot, Blocks.WHITE_CONCRETE.defaultBlockState(), false);
 
         scene.world().showSection(depotSelection, Direction.UP);
 

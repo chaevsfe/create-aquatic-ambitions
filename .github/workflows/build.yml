@@ -23,8 +23,8 @@ jobs:
 
       - name: Fetch the Create Fly Recipe Viewer jar this mod nests and compiles against
         env:
-          VIEWER_JAR_NAME: CreateReiViewer-1.0.2+fly-mc26.2.jar
-          VIEWER_JAR_URL: https://github.com/chaevsfe/CreateReiViewer-Fly/releases/download/1.0.2%2Bfly-mc26.2/CreateReiViewer-1.0.2%2Bfly-mc26.2.jar
+          VIEWER_JAR_NAME: CreateReiViewer-1.0.2+fly-mc26.1.jar
+          VIEWER_JAR_URL: https://github.com/chaevsfe/CreateReiViewer-Fly/releases/download/1.0.2%2Bfly-mc26.1/CreateReiViewer-1.0.2%2Bfly-mc26.1.jar
         run: |
           mkdir -p libs
           curl -fsSL -o "libs/$VIEWER_JAR_NAME" "$VIEWER_JAR_URL"
@@ -35,6 +35,6 @@ jobs:
       - name: Upload jars
         uses: actions/upload-artifact@v4
         with:
-          name: create_aquatic_ambitions-fabric-26.2
+          name: create_aquatic_ambitions-fabric-26.1.2
           path: build/libs/*.jar
           if-no-files-found: error
