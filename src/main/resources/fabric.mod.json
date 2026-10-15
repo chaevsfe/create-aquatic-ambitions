@@ -26,6 +26,7 @@
   "license": [
     "MIT"
   ],
+  "icon": "assets/create_aquatic_ambitions/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
