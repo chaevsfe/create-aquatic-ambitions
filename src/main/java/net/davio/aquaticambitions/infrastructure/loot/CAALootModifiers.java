@@ -30,10 +30,10 @@ public class CAALootModifiers {
     }
 
     private static void addSilklessCoral(LootContext context, List<ItemStack> drops) {
-        BlockState state = context.getOptionalParameter(LootContextParams.BLOCK_STATE);
+        BlockState state = context.getOptional(LootContextParams.BLOCK_STATE);
         if (state == null || !SILKLESS_CORALS.contains(state.getBlock()))
             return;
-        if (hasSilkTouch(context.getOptionalParameter(LootContextParams.TOOL)))
+        if (hasSilkTouch(context.getOptional(LootContextParams.TOOL)))
             return;
         drops.add(new ItemStack(state.getBlock().asItem()));
     }
