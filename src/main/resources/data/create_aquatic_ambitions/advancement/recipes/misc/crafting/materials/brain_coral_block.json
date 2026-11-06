@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "create_aquatic_ambitions:crafting/materials/brain_coral_block"
+        "recipes": "create_aquatic_ambitions:crafting/materials/brain_coral_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

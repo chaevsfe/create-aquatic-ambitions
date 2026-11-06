@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "create_aquatic_ambitions:smelting/veridium"
+        "recipes": "create_aquatic_ambitions:smelting/veridium"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "create_aquatic_ambitions:crafting/materials/prismarine_alloy"
+        "recipes": "create_aquatic_ambitions:crafting/materials/prismarine_alloy"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
