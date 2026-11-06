@@ -34,15 +34,15 @@ public class ConduitFanRenderer extends GuiBlockRenderer<ConduitFanRenderState> 
     @Override
     protected void renderToTexture(ConduitFanRenderState state, PoseStack matrices, SubmitNodeCollector queue) {
         matrices.scale(1, 1, -1);
-        matrices.mulPose(Axis.XP.rotationDegrees(-15.5f));
-        matrices.mulPose(Axis.YP.rotationDegrees(22.5f));
+        matrices.rotateDegrees(Axis.XP, -15.5f);
+        matrices.rotateDegrees(Axis.YP, 22.5f);
         matrices.translate(-0.92f, -0.75f, -0.5f);
         matrices.scale(1, -1, 1);
 
         matrices.pushPose();
         matrices.translate(0.5f, 0.5f, 0.5f);
-        matrices.mulPose(Axis.ZP.rotationDegrees(FanRenderer.getCurrentAngle() * 16));
-        matrices.mulPose(Axis.XP.rotationDegrees(180));
+        matrices.rotateDegrees(Axis.ZP, FanRenderer.getCurrentAngle() * 16);
+        matrices.rotateDegrees(Axis.XP, 180);
         matrices.translate(-0.5f, -0.5f, -0.5f);
         CachedBuffers.partial(AllPartialModels.ENCASED_FAN_INNER, Blocks.AIR.defaultBlockState()).submit(matrices, queue);
         matrices.popPose();
