@@ -1,7 +1,16 @@
 {
   "values": [
-    "create_aquatic_ambitions:fake_active_conduit",
-    "create_aquatic_ambitions:mechanical_conduit",
-    "create_aquatic_ambitions:prismarine_alloy_block"
+    {
+      "id": "create_aquatic_ambitions:fake_active_conduit",
+      "required": false
+    },
+    {
+      "id": "create_aquatic_ambitions:mechanical_conduit",
+      "required": false
+    },
+    {
+      "id": "create_aquatic_ambitions:prismarine_alloy_block",
+      "required": false
+    }
   ]
 }
