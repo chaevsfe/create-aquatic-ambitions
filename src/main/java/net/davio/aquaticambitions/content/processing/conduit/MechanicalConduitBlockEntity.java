@@ -196,10 +196,12 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
         consumeFluid();
 
         int maxAwakanedTicks = 0;
+        boolean countedDown = false;
 
         for(MechanicalConduitEffect conduitEffect : getConduitEffects().values()) {
             if (conduitEffect.isActive()) {
                 conduitEffect.subtractTicks();
+                countedDown = true;
 
                 switch (conduitEffect.getBehavior()) {
                     case CLEAR_EFFECTS -> this.clearEffects();
@@ -227,6 +229,8 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
 
             awakenedTicks = maxAwakanedTicks;
         }
+        if (countedDown)
+            setChanged();
         updateBlockState();
         sendData();
     }
@@ -243,6 +247,14 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
                 effectsTag.putInt(entry.getKey().toString(), entry.getValue().getTicks());
             }
             view.store("ConduitEffects", CompoundTag.CODEC, effectsTag);
+
+            CompoundTag amplifiersTag = new CompoundTag();
+            for (Map.Entry<Identifier, MechanicalConduitEffect> entry : conduitEffectsMap.entrySet()) {
+                if (entry.getValue().getAmplifier() > 0)
+                    amplifiersTag.putInt(entry.getKey().toString(), entry.getValue().getAmplifier());
+            }
+            if (!amplifiersTag.isEmpty())
+                view.store("ConduitAmplifiers", CompoundTag.CODEC, amplifiersTag);
         }
 
         super.write(view, clientPacket);
@@ -263,6 +275,12 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
             if (effect != null) {
                 effect.setTicks(effectsTag.getIntOr(key, 0));
             }
+        }
+
+        CompoundTag amplifiersTag = view.read("ConduitAmplifiers", CompoundTag.CODEC).orElseGet(CompoundTag::new);
+        for (Map.Entry<Identifier, MechanicalConduitEffect> entry : conduitEffectsMap.entrySet()) {
+            entry.getValue().resetAmplifier();
+            entry.getValue().setAmplifier(amplifiersTag.getIntOr(entry.getKey().toString(), 0));
         }
     }
 
