@@ -35,6 +35,10 @@ public class MechanicalConduitEffect {
         ticks += amount;
     }
 
+    public float getTicksUntil(int limit){
+        return Math.max(0f, limit - ticks);
+    }
+
     public void subtractTicks(){
         ticks --;
         if (ticks < 0f) ticks = 0f;
