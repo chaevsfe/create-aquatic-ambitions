@@ -42,6 +42,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,19 +131,33 @@ public class MechanicalConduitBlockEntity extends SmartBlockEntity {
             return;
 
         int limit = awakenedTicksLimit();
+        float conversionRate = getConversionRate(fluidStack);
+        List<MechanicalConduitEffect> fedEffects = new ArrayList<>();
         for(MechanicalConduitEffect conduitEffect : getConduitEffects().values()) {
             if (fluidStack.isIn(conduitEffect.getFluidTag()) || potionHasEffect(fluidStack, conduitEffect))
-                {
-                conduitEffect.addTicks(getConversionRate(fluidStack)*fluidStack.getAmount());
-                if (conduitEffect.getTicks() > limit)
-                    conduitEffect.setTicks(limit);
-            }
+                fedEffects.add(conduitEffect);
+        }
+
+        int consumed = fluidStack.getAmount();
+        if (!fedEffects.isEmpty()) {
+            int convertible = 0;
+            for (MechanicalConduitEffect conduitEffect : fedEffects)
+                convertible = Math.max(convertible, Mth.ceil(conduitEffect.getTicksUntil(limit) / conversionRate));
+            consumed = Math.min(consumed, convertible);
+        }
+
+        for (MechanicalConduitEffect conduitEffect : fedEffects) {
+            conduitEffect.addTicks(conversionRate * consumed);
+            if (conduitEffect.getTicks() > limit)
+                conduitEffect.setTicks(limit);
+        }
+        for(MechanicalConduitEffect conduitEffect : getConduitEffects().values()) {
             if (conduitEffect.getTicks() >= limit) {
                 tank.forbidInsertion();
             }
         }
 
-        tank.getPrimaryHandler().extractAny(tankCapacity());
+        tank.getPrimaryHandler().extractAny(consumed);
 
         notifyUpdate();
         updateBlockState();
